@@ -1,0 +1,51 @@
+// use prisma-8
+
+// Resources:
+//- Post:
+//-- id int
+//-- slug 
+//-- status enum PUBLISHED | DRAFT @default(DRAFT)
+//-- title
+//-- body
+//-- createdAt @default(now())
+//-- updatedAt?
+//-- cover
+//-- authorId
+//-- tags
+
+//- User:
+//-- id int
+//-- status boolean @default(true)
+//-- name
+//-- email @unique
+//-- password
+ 
+model User {
+  id        Int                @id @default(autoincrement())
+  email     String             @unique
+  username  String?
+  name      String?
+  posts     Post[]
+  createdAt DateTime           @default(now()) @onCreate(now())
+  updatedAt temporal.UpdatedAt
+}
+
+model Post {
+  id        Int                @id @default(autoincrement())
+  slug      String
+  title     String
+  status    PostStatus         @default(DRAFT)
+  body      String?
+  author    User               @relation(fields: [authorId], references: [id])
+  authorId  Int
+  cover     String
+  tags      String             @default("")
+  createdAt DateTime           @default(now()) @onCreate(now())
+  updatedAt temporal.UpdatedAt
+}
+
+enum PostStatus {
+  // Block keys and attributes
+  PUBLISHED
+  DRAFT
+}
