@@ -1,33 +1,15 @@
 // use prisma-8
 
-// Resources:
-//- Post:
-//-- id int
-//-- slug 
-//-- status enum PUBLISHED | DRAFT @default(DRAFT)
-//-- title
-//-- body
-//-- createdAt @default(now())
-//-- updatedAt?
-//-- cover
-//-- authorId
-//-- tags
-
-//- User:
-//-- id int
-//-- status boolean @default(true)
-//-- name
-//-- email @unique
-//-- password
- 
 model User {
   id        Int                @id @default(autoincrement())
-  email     String             @unique
-  username  String?
-  name      String?
+  name      String
+  email     String   @unique
+  password  String
+  status    Boolean            @default(true)
   posts     Post[]
   createdAt DateTime           @default(now()) @onCreate(now())
   updatedAt temporal.UpdatedAt
+  @@map("user")
 }
 
 model Post {
@@ -42,6 +24,7 @@ model Post {
   tags      String             @default("")
   createdAt DateTime           @default(now()) @onCreate(now())
   updatedAt temporal.UpdatedAt
+  @@map("post")
 }
 
 enum PostStatus {

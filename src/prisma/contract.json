@@ -4,11 +4,11 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "Post": {
+    "post": {
       "model": "Post",
       "namespace": "public"
     },
-    "User": {
+    "user": {
       "model": "User",
       "namespace": "public"
     }
@@ -16,6 +16,21 @@
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "PostStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "PUBLISHED",
+                "value": "PUBLISHED"
+              },
+              {
+                "name": "DRAFT",
+                "value": "DRAFT"
+              }
+            ]
+          }
+        },
         "models": {
           "Post": {
             "fields": {
@@ -26,8 +41,15 @@
                   "kind": "scalar"
                 }
               },
-              "content": {
+              "body": {
                 "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "cover": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -47,6 +69,33 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "slug": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "PostStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tags": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -91,14 +140,26 @@
                 "authorId": {
                   "column": "authorId"
                 },
-                "content": {
-                  "column": "content"
+                "body": {
+                  "column": "body"
+                },
+                "cover": {
+                  "column": "cover"
                 },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "id": {
                   "column": "id"
+                },
+                "slug": {
+                  "column": "slug"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tags": {
+                  "column": "tags"
                 },
                 "title": {
                   "column": "title"
@@ -108,7 +169,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "Post"
+              "table": "post"
             }
           },
           "User": {
@@ -138,9 +199,23 @@
                 }
               },
               "name": {
-                "nullable": true,
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "password": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
@@ -152,13 +227,6 @@
                   "typeParams": {
                     "precision": 3
                   }
-                }
-              },
-              "username": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
                 }
               }
             },
@@ -193,15 +261,18 @@
                 "name": {
                   "column": "name"
                 },
+                "password": {
+                  "column": "password"
+                },
+                "status": {
+                  "column": "status"
+                },
                 "updatedAt": {
                   "column": "updatedAt"
-                },
-                "username": {
-                  "column": "username"
                 }
               },
               "namespaceId": "public",
-              "table": "User"
+              "table": "user"
             }
           }
         }
@@ -213,17 +284,29 @@
       "public": {
         "entries": {
           "table": {
-            "Post": {
+            "post": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('PUBLISHED', 'DRAFT')",
+                  "name": "post_status_check_f8a3e865",
+                  "prefix": "post_status_check"
+                }
+              ],
               "columns": {
                 "authorId": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
                 },
-                "content": {
+                "body": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
+                },
+                "cover": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -246,6 +329,35 @@
                   },
                   "nullable": false
                 },
+                "slug": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DRAFT"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "PostStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tags": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
+                  "nullable": false
+                },
                 "title": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -263,21 +375,21 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "Post_authorId_idx_e47547ed"
+                    "name": "post_authorId_idx_e47547ed"
                   },
                   "source": {
                     "columns": [
                       "authorId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "Post"
+                    "tableName": "post"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "User"
+                    "tableName": "user"
                   }
                 }
               ],
@@ -286,8 +398,8 @@
                   "columns": [
                     "authorId"
                   ],
-                  "name": "Post_authorId_idx_e47547ed",
-                  "prefix": "Post_authorId_idx",
+                  "name": "post_authorId_idx_e47547ed",
+                  "prefix": "post_authorId_idx",
                   "unique": false
                 }
               ],
@@ -298,7 +410,7 @@
               },
               "uniques": []
             },
-            "User": {
+            "user": {
               "columns": {
                 "createdAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -329,7 +441,21 @@
                 "name": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": true
+                  "nullable": false
+                },
+                "password": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nullable": false
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -338,11 +464,6 @@
                   "typeParams": {
                     "precision": 3
                   }
-                },
-                "username": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
                 }
               },
               "foreignKeys": [],
@@ -360,16 +481,25 @@
                 }
               ]
             }
+          },
+          "valueSet": {
+            "PostStatus": {
+              "kind": "valueSet",
+              "values": [
+                "PUBLISHED",
+                "DRAFT"
+              ]
+            }
           }
         },
         "id": "public",
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "920a87b50729a867e21706dd0fa5c3739e273a84ed89eb2f3525633b2d6ef85c"
+    "storageHash": "44239e8cb131541ec50740d92fc5bdb9bff18db1a37252380499a074a45bee4b"
   },
   "execution": {
-    "executionHash": "0ff7f5c55037616d53a67c7c581c1178658b41c7a674a85dd59fc3b8f9dd8a49",
+    "executionHash": "7125bdcf63d80e9c87608f0271ad13900e24e05cab2a6119e1bfa3ce6301a5ba",
     "mutations": {
       "defaults": [
         {
@@ -381,7 +511,7 @@
             }
           },
           "ref": {
-            "entry": "Post",
+            "entry": "post",
             "field": "createdAt",
             "namespace": "public"
           }
@@ -402,7 +532,7 @@
             }
           },
           "ref": {
-            "entry": "Post",
+            "entry": "post",
             "field": "updatedAt",
             "namespace": "public"
           }
@@ -416,7 +546,7 @@
             }
           },
           "ref": {
-            "entry": "User",
+            "entry": "user",
             "field": "createdAt",
             "namespace": "public"
           }
@@ -437,7 +567,7 @@
             }
           },
           "ref": {
-            "entry": "User",
+            "entry": "user",
             "field": "updatedAt",
             "namespace": "public"
           }
