@@ -35,3 +35,10 @@ export const verifyUser = async ({email, password}: VerifyUserProps) => {
     //deu certo?
     return user;
 }
+
+export const getUserById = async (id: number) =>{
+    return await db.orm.public.User
+    .whereUnique({id})
+    .select("id", "name", "email", "status")
+    .first();
+}

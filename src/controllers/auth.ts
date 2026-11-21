@@ -1,8 +1,9 @@
-import { RequestHandler } from "express";
+import { RequestHandler, Response} from "express";
 import { error } from "node:console";
 import z from "zod";
 import { createUser, verifyUser } from "../services/user";
 import { createToken } from "../services/auth";
+import { ExtendedRequest } from "../types/estended-request";
 
 export const signup: RequestHandler = async (req, res) =>{
     //define o formato esperado dos dados com o zod (z)
@@ -77,6 +78,6 @@ export const signin: RequestHandler = async (req, res) =>{
     });
 }
 
-export const validate: RequestHandler = async (req, res) =>{
-    
+export const validate = (req: ExtendedRequest, res: Response) =>{
+    res.json({user: req.user});
 }
